@@ -38,6 +38,32 @@ export class PushNotificationController {
     }
   }
 
+  @Post('queue-workshops')
+  async createQueueWorkshop(@Body() data: any): Promise<any> {
+    try {
+      console.log(
+        data,
+        '=> push-notification.controller.createPushNotification > data',
+      );
+
+      const result = await this.pushNotificationService.createQueueWorkshop(
+        data,
+      );
+
+      return {
+        success: true,
+        message: {
+          code: 'INSERT_DATA_SUCCESS',
+          message: 'Tambah data sukses.',
+        },
+        result,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   @Get('push-notifications')
   async getPushNotifications(): Promise<any> {
     try {

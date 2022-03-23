@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RedisPushNotificationService } from 'src/common/redis/push-notification/redis-push-notification.service';
+import { RedisQueueWorkshopService } from 'src/common/redis/queue-workshop/redis-queue-workshop.service';
 import { DateTimeUtils } from 'src/utils/date-time-utils';
 import { CreatePushNotificationDTO } from './dto/create-push-notification.dto';
 
@@ -7,6 +8,7 @@ import { CreatePushNotificationDTO } from './dto/create-push-notification.dto';
 export class PushNotificationService {
   constructor(
     private readonly redisPushNotificationService: RedisPushNotificationService,
+    private readonly redisQueueWorkshopService: RedisQueueWorkshopService,
   ) {}
 
   private readonly logger = new Logger(PushNotificationService.name);
@@ -33,7 +35,7 @@ export class PushNotificationService {
       const schedule = new Date(`${data.schedule} +${gmt_offset}`);
       const queueId = data.queue_id;
 
-      await this.createPushNotificationQueue(schedule, queueId);
+      await this.createQueueWorkshop({ schedule, queueId });
 
       return { status: true };
     } catch (error) {
@@ -97,6 +99,41 @@ export class PushNotificationService {
 
   async broadcastPushNotification() {
     console.log('QUEUE TEREKSEKUSI');
+  }
+
+  async createQueueWorkshop(data: any) {
+    try {
+      console.log(
+        data,
+        '=> push-notification.service.createPushNotification > data',
+      );
+
+      //=> Validasi Date
+      const gmt_offset = '7';
+      const date = new Date(`${data.schedule} +${gmt_offset}`);
+      const delay = DateTimeUtils.nowToDatetimeMilis(date);
+      const queueId = data.queue_id;
+
+      await this.redisQueueWorkshopService.createQueueWorkshop({
+        delay,
+        id: queueId,
+      });
+
+      return { status: true };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async executeQueue(data: any) {
+    try {
+      console.log('QUEUE BERHASIL DI EKSEKUSI');
+
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async deletePushNotificationQueue(findPushNotificationId: string) {

@@ -3,6 +3,8 @@ import { RedisPushNotificationProcessor } from './redis/push-notification/redis-
 import { BullModule } from '@nestjs/bull';
 import { PushNotificationModule } from 'src/push-notification/push-notification.module';
 import { RedisPushNotificationService } from './redis/push-notification/redis-push-notification.service';
+import { RedisQueueWorkshopService } from './redis/queue-workshop/redis-queue-workshop.service';
+import { RedisQueueWorkshopProcessor } from './redis/queue-workshop/redis-queue-workshop.processor';
 
 @Global()
 @Module({
@@ -13,7 +15,17 @@ import { RedisPushNotificationService } from './redis/push-notification/redis-pu
     forwardRef(() => PushNotificationModule),
   ],
   controllers: [],
-  providers: [RedisPushNotificationProcessor, RedisPushNotificationService],
-  exports: [RedisPushNotificationProcessor, RedisPushNotificationService],
+  providers: [
+    RedisPushNotificationProcessor,
+    RedisPushNotificationService,
+    RedisQueueWorkshopProcessor,
+    RedisQueueWorkshopService,
+  ],
+  exports: [
+    RedisPushNotificationProcessor,
+    RedisPushNotificationService,
+    RedisQueueWorkshopProcessor,
+    RedisQueueWorkshopService,
+  ],
 })
 export class CommonModule {}
